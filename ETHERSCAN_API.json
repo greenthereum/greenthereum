@@ -1,0 +1,4 @@
+{
+  "HOST": "https://api.etherscan.io/api",
+  "KEY": "YOUR_API_KEY"
+}
