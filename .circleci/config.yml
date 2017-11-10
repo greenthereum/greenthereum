@@ -16,6 +16,12 @@ jobs:
 
     working_directory: ~/greenthereum
 
+    
+    branches:
+      ignore: 
+        # do not run tests on this branches
+        - /eject-.*/
+
     steps:
       - checkout
 
@@ -35,5 +41,4 @@ jobs:
         
       # run tests!
       - run: npm test
-
 
