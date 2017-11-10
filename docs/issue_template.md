@@ -4,19 +4,26 @@ Please follow the proper issue template bellow*
 
 ### Features
 
-- Actual behavior and expected behavior.
+- Actual behavior   
+  < write here >
+
+- Expected behavior   
+  < write here >
 
 ----- 
 
 ### Bugs
 
-- Environment, operating system, hardware, etc. The more specific better it is.
+- Environment, operating system, hardware, etc. The more specific better it is.   
+  < write here >
 
+- Actual behavior   
+  < write here >
 
-- Actual behavior and expected behavior.
+- Expected behavior   
+  < write here >
 
+- Steps to reproduce.   
+  < write here >
 
-- Steps to reproduce.
-
-
-
+Thanks
