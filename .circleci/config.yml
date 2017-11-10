@@ -15,7 +15,6 @@ jobs:
       # - image: circleci/mongo:3.4.4
 
     working_directory: ~/greenthereum
-
     
     branches:
       ignore: 
