@@ -112,7 +112,7 @@ export default class Main extends React.Component {
         this.setState({ loading: false })
         this.showAlert(
           `Can't load the app`,
-          'Something is really wrong.\nTry restat the app.',
+          'Something is really wrong.\nTry restarting the app or contact us.',
           err)
       })
   }
