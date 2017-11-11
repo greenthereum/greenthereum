@@ -74,12 +74,12 @@ export default class BottomNav extends React.Component {
          </TouchableHighlight>
         </View>
         <View style={styles.bottomGrid}>
-          <View style={styles.col}>
-            <TouchableHighlight key="confs" underlayColor='transparent' onPress={this.openPreferences}>
-              <Image style={styles.bottomBtn} source={settingsBtn}></Image>
-            </TouchableHighlight>
-            <Text style={styles.font10}>Preferences</Text>
-          </View>
+          <TouchableHighlight key="confs" underlayColor='transparent' onPress={this.openPreferences}>
+            <View style={styles.col}>
+                <Image style={styles.bottomBtn} source={settingsBtn}></Image>
+              <Text style={styles.font10}>Preferences</Text>
+            </View>
+          </TouchableHighlight>
         </View>
       </View>
     )
