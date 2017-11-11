@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableHighlight, ScrollView } from 'react-native'
 import Warning from './Warning'
 import List from './List'
 import appStyles from './lib/styles'
@@ -34,13 +34,15 @@ export default class Welcome extends React.Component {
 
   render() {
     return (
-      <View style={[appStyles.container, styles.flex]}>
-        <Warning customStyles={styles.warning} msg='No accounts found'></Warning>
-        <Warning customStyles={styles.warning} msg='Please import an Ethereum Address to track.'></Warning>
-        <View style={styles.picContainer}>
-          <Image source={etherIcon} style={styles.img}/>
+      <ScrollView>
+        <View style={[appStyles.container, styles.flex]}>
+          <Warning customStyles={styles.warning} msg='No accounts found'></Warning>
+          <Warning customStyles={styles.warning} msg='Please import an Ethereum Address to track.'></Warning>
+          <View style={styles.picContainer}>
+            <Image source={etherIcon} style={styles.img}/>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     )
   }
 }
