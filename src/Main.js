@@ -44,7 +44,7 @@ export default class Main extends React.Component {
       conversionRates: {},
       cached: false,
       date: null,
-      loading: true,
+      loading: false,
       isConnected: true
     }
     this.navigation = this.props.navigation
@@ -206,9 +206,7 @@ export default class Main extends React.Component {
 
   fetchData() {
     console.log('getStats()')
-    this.setState({
-      loading: true
-    })
+    this.setState({ loading: true })
     if (this.state.isConnected) {
       // Fetch server data
       Promise.all([API.getStats(), this.getAccounts()])
@@ -279,9 +277,7 @@ export default class Main extends React.Component {
       })
       .catch((err) => {
         console.log('No backup found:', err)
-        this.setState({
-          loading: false
-        })
+        this.setState({ loading: false })
       })
   }
 
