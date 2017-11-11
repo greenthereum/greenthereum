@@ -7,6 +7,7 @@ import {
   NetInfo,
   StyleSheet,
   TouchableHighlight,
+  Text,
   View
 } from 'react-native'
 import List from './List'
@@ -14,6 +15,7 @@ import Welcome from './Welcome'
 import Footer from './Footer'
 import BottomNav from './BottomNav'
 import ActivityIndicatorLayer from './ActivityIndicatorLayer'
+import RefreshButton from './components/Main/RefreshButton'
 import {STG_ADDRESSES, STG_STATE, CURRENCIES} from './lib/constants'
 import API from './lib/api'
 import {convertBalanceFromWei} from './lib/utils'
@@ -319,9 +321,18 @@ export default class Main extends React.Component {
       <List screenProps={screenProps} date={this.state.date} items={this.state.accounts}></List>
     return (
       <View style={styles.container}>
+        {
+          this.state.accounts.length ?
+            <RefreshButton action={this.refresh}/> :
+            undefined
+        }
+        <View style={[appStyles.center, styles.homeTitle]}>
+          <Text style={styles.homeTitleText}>Addresses</Text>
+        </View>
         <View style={offlineStyle}>
           <Image source={offlineImg} style={styles.img}/>
         </View>
+
         {
           this.state.loading ?
             <ActivityIndicatorLayer animating={true}></ActivityIndicatorLayer> :
@@ -344,5 +355,13 @@ const styles = StyleSheet.create({
   img: {
     width: 32,
     height: 32
+  },
+  homeTitle: {
+    backgroundColor: appStyles.color.primary[400],
+    height: 32
+  },
+  homeTitleText: {
+    fontSize: 16,
+    color: appStyles.color.white
   }
 })

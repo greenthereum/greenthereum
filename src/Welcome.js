@@ -5,6 +5,11 @@ import List from './List'
 import appStyles from './lib/styles'
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   warning: {
     padding: 20
   },
@@ -29,7 +34,7 @@ export default class Welcome extends React.Component {
 
   render() {
     return (
-      <View style={appStyles.container}>
+      <View style={[appStyles.container, styles.flex]}>
         <Warning customStyles={styles.warning} msg='No accounts found'></Warning>
         <Warning customStyles={styles.warning} msg='Please import an Ethereum Address to track.'></Warning>
         <View style={styles.picContainer}>

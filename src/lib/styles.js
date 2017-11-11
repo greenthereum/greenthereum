@@ -38,7 +38,7 @@ export default {
     paddingTop: 20,
     paddingBottom: 20,
     backgroundColor: '#1B5E20',
-    height: 96,
+    height: 96
   },
   headerTitleMain: {
     fontSize: 22,

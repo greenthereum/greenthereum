@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
     padding: 8
   },
   bottomBtn: {
-    width: 36,
-    height: 36
+    width: 32,
+    height: 32
   },
   font10: {
     fontSize: 10
@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }
 })
+const importBtn = require('../assets/img/download.png')
+const settingsBtn = require('../assets/img/settings.png')
 
 export default class BottomNav extends React.Component {
   constructor(props) {
@@ -61,10 +63,6 @@ export default class BottomNav extends React.Component {
   }
 
   render() {
-    const importBtn = require('../assets/img/download.png')
-    const refreshButton = require('../assets/img/refreshSecundary.png')
-    const settingsBtn = require('../assets/img/settings.png')
-
     return (
       <View style={styles.navigation}>
         <View style={styles.bottomGrid}>
@@ -75,17 +73,6 @@ export default class BottomNav extends React.Component {
             </View>
          </TouchableHighlight>
         </View>
-        <View style={styles.bottomGrid}>
-          <TouchableHighlight key="refresh" underlayColor='transparent' onPress={this.mainComponent.refresh}>
-            <View style={styles.col}>
-              <Image
-                style={styles.bottomBtn}
-                source={refreshButton}>
-              </Image>
-              <Text style={styles.font10}>Refresh</Text>
-            </View>
-         </TouchableHighlight>
-       </View>
         <View style={styles.bottomGrid}>
           <View style={styles.col}>
             <TouchableHighlight key="confs" underlayColor='transparent' onPress={this.openPreferences}>
