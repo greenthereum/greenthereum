@@ -3,7 +3,7 @@ import {NetInfo, AsyncStorage} from 'react-native'
 import renderer from 'react-test-renderer'
 import Main from '../src/Main'
 import * as constants from '../src/lib/constants'
-
+import * as API from '../src/lib/api'
 // weird bug in Jest https://github.com/facebook/react-native/issues/12440
 jest.mock('WebView', () => 'WebView')
 
@@ -91,6 +91,49 @@ describe('Main', () => {
         expect(AsyncStorage.getItem).toHaveBeenCalledWith(constants.STG_ADDRESSES)
         done()
     }, 100)
+  })
+
+  describe('getAccounts', () => {
+    beforeEach(() => {
+      // mock the API call
+      const accounts = [{ key: 1 }]
+      const getAccountsMock = jest.fn(() => Promise.resolve(accounts))
+      API.getAccounts = getAccountsMock
+    })
+
+    it('should return a promise', () => {
+      const rendererInstance = renderer.create(<Main/>)
+      const component = rendererInstance.getInstance()
+      const actual = typeof component.getAccounts().then
+      const expected = 'function'
+      expect(actual).toEqual(expected)
+    })
+
+    xit('should return the proper accounts', (done) => {
+      // mock the API call
+      const accounts = [{ key: 1 }]
+      const getAccountsMock = jest.fn(() => Promise.resolve(accounts))
+      API.getAccounts = getAccountsMock
+
+      const rendererInstance = renderer.create(<Main/>)
+      const component = rendererInstance.getInstance()
+      console.log(component.getAccounts())
+      component.getAccounts()
+        .then((result) => {
+          const expected = [{ key: 1 }]
+          expect(result).toEqual(expected)
+          done()
+        })
+        .catch((err) => {
+          expect(err).toBeFalsy()
+          done()
+        })
+    })
+
+    afterEach(() => {
+      API.getAccounts.mockReset()
+      API.getAccounts.mockRestore()
+    })
   })
 
   describe('fetchData', () => {
