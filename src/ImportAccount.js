@@ -103,9 +103,8 @@ export default class ImportAccount extends React.Component {
           <View style={style.inputContainer}>
             <TextInput
               style={style.input}
-              placeholder="Paste your ethereum address"
+              placeholder="Paste here an ethereum address"
               onChangeText={this.updateText}
-              autoFocus={true}
               autoCorrect={false}
               blurOnSubmit={true}
               maxLength={42}
