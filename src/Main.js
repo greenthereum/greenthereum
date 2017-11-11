@@ -312,8 +312,8 @@ export default class Main extends React.Component {
     const offlineStyle = {
       display: this.state.isConnected ? 'none': 'flex',
       position: 'absolute',
-      top: 5,
-      right: 7,
+      bottom: 78,
+      left: 20,
       zIndex: 10
     }
     const content = !this.state.accounts.length ?
@@ -353,8 +353,8 @@ export default class Main extends React.Component {
 const styles = StyleSheet.create({
   container: appStyles.container,
   img: {
-    width: 32,
-    height: 32
+    width: 35,
+    height: 35
   },
   homeTitle: {
     backgroundColor: appStyles.color.primary[400],
