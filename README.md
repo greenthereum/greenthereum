@@ -7,7 +7,7 @@ Free and **Open Source** [Ethereum](https://ethereum.org/) tracker and account e
 In a nutshell this app will give you access to follow and track your ethereums accounts activities and info in different currencies.  
 **Important**: We will **never** ask for your **private** key, we don't need it, we only access the open information in the blockchain with your **public address**.
 
-![](assets/pictures/rsz_list.png)
+![](assets/pictures/list-2.png)
 ![](assets/pictures/rsz_overview.png)   
 
 ### Features
@@ -29,16 +29,18 @@ In a nutshell this app will give you access to follow and track your ethereums a
 - [expo app](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www)
 
 #### Installing
-- First `$ git clone <url>` this repository
+- First clone this repository:   
+  `$ git clone <url>`   
 - `$ cd greenthereum/`
 - `$ npm install`
-- Install the [expo client](https://expo.io/): `$ npm install exp --global`
+- Install the [expo client](https://expo.io/):  
+  `$ npm install exp --global`
 
-#### Development
+#### Run (development)
 - Read official docs for your OS (step 1 and 2): [Running On Device](https://facebook.github.io/react-native/docs/running-on-device.html)
-- Plug your phone and connect to the same wifi
+- Open `ETHERSCAN_API.json` and set your own `KEY` to have access to the etherscan.io public API
 - `$ npm run start` see the *package.json* for more options
-- Follow the instructions
+- Follow the **instructions** given
 
 #### Running the tests
 - `$ npm test` will run all tests
@@ -57,8 +59,8 @@ Address:
 - All the contributors
 - [etherscan.io](https://etherscan.io/) APIs
 - [fixer.io](https://github.com/hakanensari/fixer) project
-- Iconfinder and [yanlu](https://www.iconfinder.com/yanlu), [martin.allie](https://www.iconfinder.com/martin.allien)
-
+- Iconfinder and [yanlu](https://www.iconfinder.com/yanlu), [martin.allie](https://www.iconfinder.com/martin.allien)  
+- [flaticon](https://www.flaticon.com/)
 ### License
 
 This project is licensed under the **MIT License** © [@juliomatcom](https://twitter.com/juliomatcom)
