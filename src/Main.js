@@ -216,7 +216,7 @@ export default class Main extends React.Component {
     this.setState({ loading: true })
     if (this.state.isConnected) {
       // Fetch server data
-      Promise.all([API.getStats(), this.getAccounts()])
+      return Promise.all([API.getStats(), this.getAccounts()])
       .then((responses) => {
         return Promise.all([responses[0].json(), responses[1].json()])
       })
@@ -256,7 +256,7 @@ export default class Main extends React.Component {
       })
       .catch(this.loadBackup.bind(this))
     } else {
-      this.loadBackup('No internet connection found')
+      return this.loadBackup('No internet connection found')
     }
   }
 
@@ -273,7 +273,7 @@ export default class Main extends React.Component {
 
   loadBackup(err) { // load Backup
     console.log('fetchData ERROR:', err)
-    AsyncStorage.getItem(STG_STATE)
+    return AsyncStorage.getItem(STG_STATE)
       .then(backup => JSON.parse(backup))
       .then((backupState) => {
         console.log(`using backup state from ${backupState.date}`)

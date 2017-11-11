@@ -56,12 +56,20 @@ export default class Preferences extends React.Component {
   }
 
   updateMainStatePrefs(preferences) {
-    this.mainComponent.setState((prevState) => ({ preferences }), () => {
-    // wait for the main State is updated then:
-      this.mainComponent.loadConversionRates()
-        .then(this.mainComponent.refresh)
-      this.mainComponent.updateBackupState('update backup preferences')
-    })
+    this.mainComponent.setState(
+      (prevState) => ({
+        loading: true,
+        preferences: preferences
+      }), () => {
+      // wait for the main State is updated then:
+        this.mainComponent.loadConversionRates()
+          .then(this.mainComponent.refresh)
+          .then(() => {
+            this.mainComponent.setState((prevState) => ({ loading: false }))
+          })
+        this.mainComponent.updateBackupState('update backup preferences')
+      }
+    )
   }
 
   render() {
