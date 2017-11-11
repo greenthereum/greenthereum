@@ -86,7 +86,7 @@ export default class Main extends React.Component {
   loadApp() {
     AsyncStorage.getItem(STG_ADDRESSES)
       .then((result) => {
-        if (result) {
+        if (result && result.length) {
           Promise.all([
             this.getPreferences(),
             this.loadConversionRates()
@@ -110,8 +110,11 @@ export default class Main extends React.Component {
       .catch((err) => {
         console.log(err)
         this.setState({ loading: false })
+        this.showAlert(
+          `Can't load the app`,
+          'Something is really wrong.\nTry restat the app.',
+          err)
       })
-
   }
 
   getPreferences() {
@@ -178,6 +181,10 @@ export default class Main extends React.Component {
       })
       .catch((err) => {
         console.log('No backup state found', err)
+        this.showAlert(
+          `Can't load any currency rates`,
+          'All amounts will be shown in USD, try restart the App.',
+          err)
       })
   }
 
