@@ -1,6 +1,6 @@
 {
   "name": "greenthereum",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "private": true,
   "devDependencies": {
     "babel-eslint": "^7.2.3",
