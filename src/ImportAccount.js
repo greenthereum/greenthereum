@@ -38,19 +38,23 @@ export default class ImportAccount extends React.Component {
     const { params } = this.navigation.state
     this.mainComponent = params.mainComponent
   }
-
+  // TODO: Add unit tests to this
   importAccount() {
     const newAddress = this.state.address
     if (isEthereumAddress(newAddress)) {
       console.log('mergeItem', newAddress)
       AsyncStorage.getItem(STG_ADDRESSES)
         .then((addressesStr) => {
-          if (addressesStr) {
-            // update
+          if (addressesStr) { // update
             const addresses = JSON.parse(addressesStr)
-            addresses.push(newAddress)
-            AsyncStorage.setItem(STG_ADDRESSES, JSON.stringify(addresses))
-          } else {
+            // add if it is not stored already
+            if (!addresses.find((address) => address === newAddress)) {
+              addresses.push(newAddress)
+              AsyncStorage.setItem(STG_ADDRESSES, JSON.stringify(addresses))
+            } else {
+              return Promise.reject('Address already exists')
+            }
+          } else { // first address
             AsyncStorage.setItem(STG_ADDRESSES, JSON.stringify([newAddress]))
           }
         })
@@ -68,6 +72,10 @@ export default class ImportAccount extends React.Component {
             }
           })
           this.mainComponent.refresh()
+          this.navigation.goBack()
+        })
+        .catch((err) => {
+          console.log(err)
           this.navigation.goBack()
         })
     } else {
