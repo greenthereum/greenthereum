@@ -1,7 +1,8 @@
 import React from 'react'
-import {NetInfo} from 'react-native'
+import {NetInfo, AsyncStorage} from 'react-native'
 import renderer from 'react-test-renderer'
 import Main from '../src/Main'
+import * as constants from '../src/lib/constants'
 
 // weird bug in Jest https://github.com/facebook/react-native/issues/12440
 jest.mock('WebView', () => 'WebView')
@@ -34,11 +35,14 @@ describe('Main', () => {
     const loadConversionRatesMock = jest.fn(() => Promise.resolve())
     const fetchDataMock = jest.fn(() => Promise.resolve())
     const loadAppMock = jest.fn(() => Promise.resolve())
+    const getItemMock = jest.fn(() => Promise.resolve(
+      JSON.stringify(['123456790'])
+    ))
     // mock network calls
     Main.prototype.getPreferences = getPreferencesMock
     Main.prototype.loadConversionRates = loadConversionRatesMock
     Main.prototype.fetchData = fetchDataMock
-    Main.prototype.loadApp = loadAppMock
+    AsyncStorage.getItem = getItemMock
   })
 
   it('renders without crashing', () => {
@@ -47,10 +51,9 @@ describe('Main', () => {
     expect(rendered).toBeTruthy()
   })
 
-  it('should init the App\'s state', () => {
+  it('should init the App\'s state', (done) => {
     const rendererInstance = renderer.create(<Main/>)
     const component = rendererInstance.getInstance()
-    const actual = component.state
     const expected = {
       screen: 'Main',
       accounts: [],
@@ -65,19 +68,27 @@ describe('Main', () => {
       conversionRates: {},
       cached: false,
       date: null,
-      loading: true,
       isConnected: true
     }
-    expect(actual).toEqual(expected)
+    //first the app starts loading
+    expected.loading = true
+
+    expect(component.state).toEqual(expected)
+    setTimeout(() => {
+      // wait for componentDidMount loaders
+      expected.loading = false
+      expect(component.state).toEqual(expected)
+      done()
+    }, 100)
   })
 
-  it('should call loaders on componentDidMount', (done) => {
+  it('should try to get local accounts', (done) => {
     const loadAppMock = jest.fn(() => Promise.resolve())
     const rendererInstance = renderer.create(<Main/>)
 
     setTimeout(() => {
       // loadApp runs after netInfo and setState (asynchronus)
-        expect(Main.prototype.loadApp).toHaveBeenCalled()
+        expect(AsyncStorage.getItem).toHaveBeenCalledWith(constants.STG_ADDRESSES)
         done()
     }, 100)
   })
@@ -114,7 +125,7 @@ describe('Main', () => {
     Main.prototype.loadConversionRates.mockRestore()
     Main.prototype.fetchData.mockReset()
     Main.prototype.fetchData.mockRestore()
-    Main.prototype.loadApp.mockReset()
-    Main.prototype.loadApp.mockRestore()
+    AsyncStorage.getItem.mockReset()
+    AsyncStorage.getItem.mockRestore()
   })
 })
