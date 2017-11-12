@@ -47,7 +47,7 @@ export default class Main extends React.Component {
       },
       conversionRates: {},
       cached: false,
-      date: null,
+      date: null, // Date in state are strings
       loading: false,
       isConnected: true
     }
@@ -109,7 +109,7 @@ export default class Main extends React.Component {
       // (Wait 2 days before update conversionRates)
       conversionsBackupDate.setDate(conversionsBackupDate.getDate() + 2)
       if (conversionsBackupDate >= now) {
-        console.log(`Using conversions backup from: ${conversionsBackupDate}`)
+        console.log(`Using conversionRates from backup: ${this.state.conversionRates.date}`)
         return Promise.resolve()
       }
     }
@@ -119,7 +119,7 @@ export default class Main extends React.Component {
         .then(response => response.json())
         .then(data => {
           if (data.rates) {
-            data.date = new Date() // Override date from the reponse (sometime gets stuck)
+            data.date = (new Date()).toString() // Override date from the reponse (sometime gets stuck)
             this.setState((prevState) => ({ conversionRates: data }))
             this.updateBackupState('conversionRates')
           }
@@ -260,7 +260,7 @@ export default class Main extends React.Component {
     }
     const content = !this.state.wallets.length ?
       <Welcome screenProps={screenProps}></Welcome> :
-      <List screenProps={screenProps} date={this.state.date} items={this.state.wallets}></List>
+      <List screenProps={screenProps} items={this.state.wallets}></List>
     return (
       <View style={styles.container}>
         {

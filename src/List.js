@@ -13,7 +13,6 @@ import API from './lib/api'
 import {
   convertUSDFromRate,
   formatNumber,
-  formatDate,
   cropString,
   processCurrency,
 } from './lib/utils'
@@ -46,8 +45,6 @@ export default class List extends React.Component {
 
   render() {
     const fromCache = this.props.screenProps.mainState.cached
-    const date = new Date(this.props.date)
-    const stateDate = formatDate(date)
     return (
       <View style={[appStyles.container, style.listContainer]}>
         <View style={style.listHeader}>
