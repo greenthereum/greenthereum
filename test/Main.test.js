@@ -4,6 +4,8 @@ import renderer from 'react-test-renderer'
 import Main from '../src/Main'
 import * as constants from '../src/lib/constants'
 import * as API from '../src/lib/api'
+import * as backupStateMock from './mock/state'
+
 // weird bug in Jest https://github.com/facebook/react-native/issues/12440
 jest.mock('WebView', () => 'WebView')
 
@@ -31,15 +33,10 @@ NetInfo.isConnected = {
 
 describe('Main', () => {
   beforeEach(() => {
-    const getPreferencesMock = jest.fn(() => Promise.resolve())
     const loadConversionRatesMock = jest.fn(() => Promise.resolve())
     const fetchDataMock = jest.fn(() => Promise.resolve())
-    const loadAppMock = jest.fn(() => Promise.resolve())
-    const getItemMock = jest.fn(() => Promise.resolve(
-      JSON.stringify(['123456790'])
-    ))
+    const getItemMock = jest.fn(() => Promise.resolve('{}'))
     // mock network calls
-    Main.prototype.getPreferences = getPreferencesMock
     Main.prototype.loadConversionRates = loadConversionRatesMock
     Main.prototype.fetchData = fetchDataMock
     AsyncStorage.getItem = getItemMock
@@ -56,7 +53,7 @@ describe('Main', () => {
     const component = rendererInstance.getInstance()
     const expected = {
       screen: 'Main',
-      accounts: [],
+      wallets: [],
       stats: {
         ethbtc: null,
         ethusd: null,
@@ -82,57 +79,51 @@ describe('Main', () => {
     }, 100)
   })
 
-  it('should try to get local accounts', (done) => {
+  it('should load App', () => {
     const loadAppMock = jest.fn(() => Promise.resolve())
+    Main.prototype.loadApp = loadAppMock
     const rendererInstance = renderer.create(<Main/>)
 
-    setTimeout(() => {
-      // loadApp runs after netInfo and setState (asynchronus)
-        expect(AsyncStorage.getItem).toHaveBeenCalledWith(constants.STG_ADDRESSES)
-        done()
-    }, 100)
+    expect(Main.prototype.loadApp).toHaveBeenCalled()
+    loadAppMock.mockReset()
+    loadAppMock.mockRestore()
   })
 
-  describe('getAccounts', () => {
-    beforeEach(() => {
-      // mock the API call
-      const accounts = [{ key: 1 }]
-      const getAccountsMock = jest.fn(() => Promise.resolve(accounts))
-      API.getAccounts = getAccountsMock
-    })
-
-    it('should return a promise', () => {
+  describe('loadBackupState', () => {
+    it('it should load backup on Main state', async (done) => {
       const rendererInstance = renderer.create(<Main/>)
       const component = rendererInstance.getInstance()
-      const actual = typeof component.getAccounts().then
-      const expected = 'function'
+
+      AsyncStorage.getItem = jest.fn(() => Promise.resolve(JSON.stringify(backupStateMock)))
+      await component.loadBackupState()
+      const actual = component.state
+      const expected = Object.assign({}, backupStateMock)
+
+      expect(AsyncStorage.getItem).toHaveBeenCalledWith(constants.STG_STATE)
       expect(actual).toEqual(expected)
+      done()
     })
+  })
 
-    xit('should return the proper accounts', (done) => {
-      // mock the API call
-      const accounts = [{ key: 1 }]
-      const getAccountsMock = jest.fn(() => Promise.resolve(accounts))
-      API.getAccounts = getAccountsMock
-
+  describe('updateBackupState', () => {
+    it('should update the storage state', (done) => {
+      AsyncStorage.setItem = jest.fn(() => Promise.resolve())
       const rendererInstance = renderer.create(<Main/>)
       const component = rendererInstance.getInstance()
-      console.log(component.getAccounts())
-      component.getAccounts()
-        .then((result) => {
-          const expected = [{ key: 1 }]
-          expect(result).toEqual(expected)
-          done()
-        })
-        .catch((err) => {
-          expect(err).toBeFalsy()
-          done()
-        })
-    })
+      const stateMock = Object.assign({}, backupStateMock)
+      // this isn't saved
+      delete stateMock.loading
+      delete stateMock.isConnected
 
-    afterEach(() => {
-      API.getAccounts.mockReset()
-      API.getAccounts.mockRestore()
+      component.setState(stateMock, () => {
+        component.updateBackupState('tests')
+        expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+          constants.STG_STATE,
+          JSON.stringify(stateMock)
+        )
+        done()
+      })
+
     })
   })
 
@@ -162,8 +153,6 @@ describe('Main', () => {
   })
 
   afterEach(() => {
-    Main.prototype.getPreferences.mockReset()
-    Main.prototype.getPreferences.mockRestore()
     Main.prototype.loadConversionRates.mockReset()
     Main.prototype.loadConversionRates.mockRestore()
     Main.prototype.fetchData.mockReset()
