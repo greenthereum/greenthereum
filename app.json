@@ -11,5 +11,7 @@
     "android": {
       "package": "com.juliomatcom.Greenthereum"
     }
-  }
+  },
+  "name": "greenthereum",
+  "displayName": "Greenthereum"
 }
