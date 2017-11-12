@@ -3,3 +3,4 @@ node_modules/
 npm-debug.*
 apks/
 ETHERSCAN_API.json
+test/coverage

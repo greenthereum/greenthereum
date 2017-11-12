@@ -7,16 +7,16 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
-  View
+  View,
+  ScrollView
   } from 'react-native'
 import appStyles from './lib/styles'
 import {isEthereumAddress} from './lib/utils'
-import {STG_ADDRESSES} from './lib/constants'
 const QR_APP_LINK = 'https://play.google.com/store/apps/details?id=tw.mobileapp.qrcode.banner'
 
 export default class ImportAccount extends React.Component {
   static navigationOptions = {
-    headerTitle: 'Add account to track',
+    headerTitle: 'Add address to track',
     headerStyle: appStyles.headerStyle,
     headerTitleStyle: appStyles.headerTitle,
     headerTintColor: appStyles.color.white
@@ -28,9 +28,11 @@ export default class ImportAccount extends React.Component {
     this.importAccount = this.importAccount.bind(this)
     this.qrScanApp = this.qrScanApp.bind(this)
     this.updateText = this.updateText.bind(this)
+    this.updateName = this.updateName.bind(this)
     this.state = {
-      valid: true,
-      address: ''
+      validAddress: true,
+      address: '',
+      name: ''
     }
   }
 
@@ -41,45 +43,35 @@ export default class ImportAccount extends React.Component {
   // TODO: Add unit tests to this
   importAccount() {
     const newAddress = this.state.address
+    const newName = this.state.name.trim() || this.state.address
+    const newWallet = {
+      name: newName,
+      key: newAddress,
+      balance: 0,
+      usd: 0
+    }
     if (isEthereumAddress(newAddress)) {
-      console.log('mergeItem', newAddress)
-      AsyncStorage.getItem(STG_ADDRESSES)
-        .then((addressesStr) => {
-          if (addressesStr) { // update
-            const addresses = JSON.parse(addressesStr)
-            // add if it is not stored already
-            if (!addresses.find((address) => address === newAddress)) {
-              addresses.push(newAddress)
-              AsyncStorage.setItem(STG_ADDRESSES, JSON.stringify(addresses))
-            } else {
-              return Promise.reject('Address already exists')
-            }
-          } else { // first address
-            AsyncStorage.setItem(STG_ADDRESSES, JSON.stringify([newAddress]))
+      console.log('mergeItem', newWallet)
+      const wallets = this.mainComponent.state.wallets
+      // add if it is not stored already
+      if (!wallets.find((wallets) => wallets.key === newAddress)) {
+        // refresh main State even offline
+        this.mainComponent.setState((prevState) => {
+          return {
+            wallets: prevState.wallets.concat([newWallet])
           }
-        })
-        .then(() => {
-          console.log('address updated')
-          // refresh main State even offline
-          this.mainComponent.setState((prevState) => {
-            const newAccount = {
-              key: newAddress,
-              balance: 0,
-              usd: 0
-            }
-            return {
-              accounts: prevState.accounts.concat([newAccount])
-            }
-          })
+        }, () => {
+          console.log('main state wallets updated')
           this.mainComponent.refresh()
+          this.mainComponent.updateBackupState('Wallets')
           this.navigation.goBack()
         })
-        .catch((err) => {
-          console.log(err)
-          this.navigation.goBack()
-        })
+      } else {
+        console.log('Address already exists')
+        this.navigation.goBack()
+      }
     } else {
-      this.setState({ valid: false })
+      this.setState({ validAddress: false })
     }
   }
 
@@ -89,11 +81,15 @@ export default class ImportAccount extends React.Component {
       .catch(err => console.error('An error occurred', err))
   }
 
-  updateText(text){
+  updateText(text) {
     this.setState({
       address: text,
-      valid: isEthereumAddress(text)
+      validAddress: isEthereumAddress(text)
     })
+  }
+
+  updateName(text) {
+    this.setState({ name: text })
   }
 
   render() {
@@ -102,16 +98,29 @@ export default class ImportAccount extends React.Component {
     const screenProps = {
       rootNavigation: this.navigation
     }
-    const inputValidation = this.state.valid ?
+    const inputValidation = this.state.validAddress ?
       undefined :
       <Text style={style.validation}>Please paste or write a valid address</Text>
     return (
-      <View style={style.container}>
-        <View style={style.center}>
-          <View style={style.inputContainer}>
+      <ScrollView style={style.container}>
+        <View>
+          <Text style={style.label}>Name</Text>
+          <View style={style.formInput}>
             <TextInput
               style={style.input}
-              placeholder="Paste here an ethereum address"
+              placeholder="My cool ethers"
+              onChangeText={this.updateName}
+              autoCorrect={false}
+              maxLength={42}
+            />
+          </View>
+        </View>
+        <View>
+          <Text style={style.label}>Address</Text>
+          <View style={style.formInput}>
+            <TextInput
+              style={style.input}
+              placeholder="Ethereum public address"
               onChangeText={this.updateText}
               autoCorrect={false}
               blurOnSubmit={true}
@@ -119,8 +128,8 @@ export default class ImportAccount extends React.Component {
               returnKeyType='send'
               onSubmitEditing={this.importAccount}
             />
+            {inputValidation}
           </View>
-          {inputValidation}
         </View>
         <View style={style.containerSubmit}>
           <TouchableHighlight underlayColor='transparent' onPress={this.importAccount}>
@@ -130,7 +139,7 @@ export default class ImportAccount extends React.Component {
             </Image>
          </TouchableHighlight>
         </View>
-        <View style={[style.center, style.scan]}>
+        <View style={[appStyles.center, style.scan]}>
           <Text style={style.qrText}>
             Or just scan the QR Code and copy the address.
           </Text>
@@ -141,23 +150,23 @@ export default class ImportAccount extends React.Component {
             </Image>
          </TouchableHighlight>
         </View>
-      </View>
+      </ScrollView>
     )
   }
 }
 
 const style = StyleSheet.create({
-  inputContainer: {
-    paddingTop: 10
+  label: {
+    paddingTop: 10,
+    marginLeft: 40,
+    color: appStyles.color.secundary[900]
   },
   input: {
-    height: 60,
-    width: 300,
-    padding: 20
+    height: 60
   },
-  center: {
-    alignItems: 'center',
-    justifyContent: 'center'
+  formInput: {
+    marginLeft: 40,
+    marginRight: 40
   },
   containerSubmit: {
     alignItems: 'center',

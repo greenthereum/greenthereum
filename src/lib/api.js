@@ -5,7 +5,8 @@ const NORMAL_TRANS_URL = `${HOST}?module=account&action=txlist&` +
   `startblock=0&endblock=99999999&address=:address&page=:page&offset=:offset&sort=desc&apikey=${KEY}`
 const MIN_REQUEST_TIME = 1500
 
-function getAccounts(addresses) {
+function getAccounts(accounts) {
+  const addresses = accounts.map((account) => account.key)
   const addressJoined = addresses.join(',')
   const BALANCE_URL = `${HOST}?module=account&action=balancemulti` +
     `&tag=latest&apikey=${KEY}&address=${addressJoined}`

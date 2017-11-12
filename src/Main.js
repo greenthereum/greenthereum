@@ -16,7 +16,9 @@ import Footer from './Footer'
 import BottomNav from './BottomNav'
 import ActivityIndicatorLayer from './ActivityIndicatorLayer'
 import RefreshButton from './components/Main/RefreshButton'
-import {STG_ADDRESSES, STG_STATE, CURRENCIES} from './lib/constants'
+import empty from 'empty-value'
+
+import {STG_STATE, CURRENCIES} from './lib/constants'
 import API from './lib/api'
 import {convertBalanceFromWei} from './lib/utils'
 import appStyles from './lib/styles'
@@ -34,7 +36,7 @@ export default class Main extends React.Component {
     super(props)
     this.state = {
       screen: 'Main',
-      accounts: [],
+      wallets: [],
       stats: {
         ethbtc: null,
         ethusd: null,
@@ -45,14 +47,12 @@ export default class Main extends React.Component {
       },
       conversionRates: {},
       cached: false,
-      date: null,
+      date: null, // Date in state are strings
       loading: false,
       isConnected: true
     }
     this.navigation = this.props.navigation
-    this.getAccounts = this.getAccounts.bind(this)
     this.refresh =this.refresh.bind(this)
-    this.getPreferences = this.getPreferences.bind(this)
     this.updateBackupState = this.updateBackupState.bind(this)
     this.loadConversionRates = this.loadConversionRates.bind(this)
     this.handleConnectivityChange = this.handleConnectivityChange.bind(this)
@@ -76,118 +76,68 @@ export default class Main extends React.Component {
   }
 
   componentDidMount() {
+    this.loadApp()
+  }
+
+  async loadApp() {
+    console.log('loading App...')
     this.setState({ loading: true })
-    NetInfo.isConnected.fetch().then(isConnected => {
-      console.log('User is ' + (isConnected ? 'online' : 'offline'))
-      this.setState((prevState) => {
-        return { isConnected: isConnected }
-      }, this.loadApp)
-    })
-  }
-
-  loadApp() {
-    AsyncStorage.getItem(STG_ADDRESSES)
-      .then((result) => {
-        if (result && result.length) {
-          Promise.all([
-            this.getPreferences(),
-            this.loadConversionRates()
-          ])
-            .catch((err) => {
-              const title = `Error: Fetching App's data`
-              const msg =   `- Please ensure you are connected to the internet and restart the app.\n` +
-                `- If the error persists open an issue and attach this message.`
-              this.setState({ loading: false })
-              this.showAlert(title, msg, err)
-            })
-            .then(() => {
-              this.setState({ loading: false })
-            })
-            .then(this.fetchData)
-        } else {
-          console.log('No accounts found')
-          this.setState({ loading: false })
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-        this.setState({ loading: false })
-        this.showAlert(
-          `Can't load the app`,
-          'Something is really wrong.\nTry restarting the app or contact us.',
-          err)
-      })
-  }
-
-  getPreferences() {
-    return AsyncStorage.getItem(STG_STATE)
-      .then((result) => result ? JSON.parse(result) : {})
-      .then(backupState => {
-        if (backupState.preferences) {
-          console.log('getPreferences ok')
-          this.setState((prevState) => {
-            return {
-              preferences: backupState.preferences
-            }
-          })
-        }
-      })
-      .catch((err) => {
-        console.log('No preferences loaded', err)
-      })
+    try {
+      await this.loadBackupState()
+      if (this.state.wallets.length) {
+        await this.loadConversionRates()
+        this.fetchData()
+      } else { // no wallets found
+        this.setState((prevState) => ({ loading: false }))
+      }
+    } catch (err) {
+      console.log('loadApp error:', (err))
+      this.setState({ loading: false })
+      this.showAlert(
+        `Can't load the app`,
+        'Something went wrong.\nTry restarting the app or contact us.',
+        err)
+    }
   }
 
   loadConversionRates() {
     console.log('loadConversionRates')
-    return AsyncStorage.getItem(STG_STATE)
-      .then((result) => result ? JSON.parse(result) : {})
-      .then(backupState => {
-        if (backupState.conversionRates && backupState.conversionRates.date) {
-          console.log('Backed conversionRates found', JSON.stringify(backupState.conversionRates))
-          // load from Backup
-          this.setState((prevState) => ({ conversionRates: backupState.conversionRates }))
-          const now = new Date()
-          const conversionsBackupDate = new Date(Date.parse(backupState.conversionRates.date))
-          // (Wait 2 days before update conversionRates)
-          conversionsBackupDate.setDate(conversionsBackupDate.getDate() + 2)
-          if (conversionsBackupDate >= now) {
-            console.log(`Using conversions backup from: ${conversionsBackupDate}`)
-            return Promise.resolve()
+    if (this.state.conversionRates && this.state.conversionRates.date) {
+      console.log('Backed conversionRates found', JSON.stringify(this.state.conversionRates))
+      const now = new Date()
+      const conversionsBackupDate = new Date(Date.parse(this.state.conversionRates.date))
+      // (Wait 2 days before update conversionRates)
+      conversionsBackupDate.setDate(conversionsBackupDate.getDate() + 2)
+      if (conversionsBackupDate >= now) {
+        console.log(`Using conversionRates from backup: ${this.state.conversionRates.date}`)
+        return Promise.resolve()
+      }
+    }
+    if (this.state.isConnected) {
+      console.log('fetching and update conversionRates...')
+      return getConversionRates() // Update conversion rates
+        .then(response => response.json())
+        .then(data => {
+          if (data.rates) {
+            data.date = (new Date()).toString() // Override date from the reponse (sometime gets stuck)
+            this.setState((prevState) => ({ conversionRates: data }))
+            this.updateBackupState('conversionRates')
           }
-        }
-        if (this.state.isConnected) {
-          console.log('fetching and update conversionRates...')
-          return getConversionRates() // Update conversion rates
-            .then(response => response.json())
-            .then(data => {
-              if (data.rates) {
-                data.date = new Date() // Override date from the reponse (sometime gets stuck)
-                this.setState((prevState) => ({ conversionRates: data }))
-                this.updateBackupState('update backup conversionRates')
-              }
-            })
-            .catch((err) => {
-              // reset to USD
-              this.setState((prevState) => ({ loading: false }))
-              if (!this.state.conversionRates.rates) {
-                // Important: In this state the App is unable to convert currencies
-                this.showAlert(
-                  `Can't load any currency rates`,
-                  'All amounts will be shown in USD, try restart the App.',
-                  err)
-              } else {
-                this.showAlert('Error: Updating conversion rates', '', err)
-              }
-            })
-        }
-      })
-      .catch((err) => {
-        console.log('No backup state found', err)
-        this.showAlert(
-          `Can't load any currency rates`,
-          'All amounts will be shown in USD, try restart the App.',
-          err)
-      })
+        })
+        .catch((err) => {
+          // reset to USD
+          this.setState((prevState) => ({ loading: false }))
+          if (!this.state.conversionRates.rates) {
+            // Important: In this state the App is unable to convert currencies
+            this.showAlert(
+              `Can't load any currency rates`,
+              'All amounts will be shown in USD, try restart the App.',
+              err)
+          } else {
+            this.showAlert('Error: Updating conversion rates', '', err)
+          }
+        })
+    }
   }
 
   showAlert(title, msg,  err) {
@@ -204,7 +154,7 @@ export default class Main extends React.Component {
   }
 
   updateBackupState(msg) {
-    console.log(msg, JSON.stringify(this.state))
+    console.log(`Updating backup: ${msg}`, JSON.stringify(this.state))
     const backup = Object.assign({}, this.state)
     // this can't be saved or lead to wrong behaviuors
     delete backup.isConnected
@@ -213,30 +163,57 @@ export default class Main extends React.Component {
     return AsyncStorage.setItem(STG_STATE, JSON.stringify(backup))
   }
 
+  async loadBackupState() {
+    try {
+      const backup = await AsyncStorage.getItem(STG_STATE)
+      const backupState = JSON.parse(backup)
+      if (backupState && !empty(backupState)) {
+        console.log(`load Backup: ${backup}`)
+        backupState.loading = false
+        backupState.cached = true
+
+        return new Promise((resolve, reject) => {
+          this.setState(backupState, () => {
+            resolve(backupState)
+          })
+        })
+      } else {
+        console.log('no backup found')
+        return Promise.resolve({})
+      }
+    } catch (err) {
+      console.log('loading backup error:', err)
+    }
+  }
+
   fetchData() {
-    console.log('getStats()')
+    console.log('fetchData()')
     this.setState({ loading: true })
     if (this.state.isConnected) {
       // Fetch server data
-      return Promise.all([API.getStats(), this.getAccounts()])
+      return Promise.all([API.getStats(), API.getAccounts(this.state.wallets)])
       .then((responses) => {
         return Promise.all([responses[0].json(), responses[1].json()])
       })
       .then((jsons) => {
         const stats = jsons[0].result
-        const accounts = jsons[1].result
-        const items = accounts.map((account) => {
+        const accountsResult = jsons[1].result
+        const backupWallets = this.state.wallets
+        const items = accountsResult.map((account) => {
           const balance = convertBalanceFromWei(account.balance)
           const usdBalance = (balance * Number(stats.ethusd)).toFixed(2)
+          const accountAddress = account.account
+          const backupAcc = backupWallets.find((acc) => acc.key === accountAddress)
           return {
-            key: account.account,
+            name: backupAcc.name,
+            key: accountAddress,
             balance: balance,
             usd: usdBalance
           }
         })
 
         this.setState({
-          accounts: items,
+          wallets: items,
           loading: false,
           date: new Date(),
           stats: {
@@ -244,7 +221,7 @@ export default class Main extends React.Component {
             ethusd: stats.ethusd
           }
         })
-        this.updateBackupState('update backup (stats, accounts):')
+        this.updateBackupState('(stats, accounts):')
       })
       .then(API.getTotalSupply)
       .then((response) => response.json())
@@ -254,51 +231,16 @@ export default class Main extends React.Component {
             supply: convertBalanceFromWei(json.result)
           })
         }))
-        this.updateBackupState('update backup (total supply):')
+        this.updateBackupState('(total supply):')
       })
-      .catch(this.loadBackup.bind(this))
+      .catch((err) => {
+        console.log(err)
+      })
     } else {
-      return this.loadBackup('No internet connection found')
+      console.log('No internet connection found')
     }
   }
 
-  getAccounts() {
-    console.log(`getAccounts() in ${STG_ADDRESSES}`)
-    return new Promise((resolve, reject) => {
-      AsyncStorage.getItem(STG_ADDRESSES)
-        .then((result) => result ? JSON.parse(result) : [])
-        .then(API.getAccounts)
-        .then(resolve)
-        .catch(reject)
-    })
-  }
-
-  loadBackup(err) { // load Backup
-    console.log('fetchData ERROR:', err)
-    return AsyncStorage.getItem(STG_STATE)
-      .then(backup => JSON.parse(backup))
-      .then((backupState) => {
-        console.log(`using backup state from ${backupState.date}`)
-        backupState.loading = false
-        backupState.isConnected = false
-        backupState.cached = true
-        this.setState(backupState)
-      })
-      .catch((err) => {
-        console.log('No backup found:', err)
-        this.setState({ loading: false })
-      })
-  }
-
-  removeAddresses() {
-    AsyncStorage.removeItem(STG_ADDRESSES)
-      .then(() => {
-        console.log('all addresses removed')
-        this.setState({
-          accounts: []
-        })
-      })
-  }
   refresh() {
     console.log('refresh()')
     this.fetchData()
@@ -316,18 +258,18 @@ export default class Main extends React.Component {
       left: 20,
       zIndex: 10
     }
-    const content = !this.state.accounts.length ?
+    const content = !this.state.wallets.length ?
       <Welcome screenProps={screenProps}></Welcome> :
-      <List screenProps={screenProps} date={this.state.date} items={this.state.accounts}></List>
+      <List screenProps={screenProps} items={this.state.wallets}></List>
     return (
       <View style={styles.container}>
         {
-          this.state.accounts.length ?
+          this.state.wallets.length ?
             <RefreshButton action={this.refresh}/> :
             undefined
         }
         <View style={[appStyles.center, styles.homeTitle]}>
-          <Text style={styles.homeTitleText}>Addresses</Text>
+          <Text style={styles.homeTitleText}>Wallets</Text>
         </View>
         <View style={offlineStyle}>
           <Image source={offlineImg} style={styles.img}/>

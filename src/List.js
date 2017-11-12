@@ -13,8 +13,7 @@ import API from './lib/api'
 import {
   convertUSDFromRate,
   formatNumber,
-  formatDate,
-  getShortAddress,
+  cropString,
   processCurrency,
 } from './lib/utils'
 import appStyles from './lib/styles'
@@ -46,8 +45,6 @@ export default class List extends React.Component {
 
   render() {
     const fromCache = this.props.screenProps.mainState.cached
-    const date = new Date(this.props.date)
-    const stateDate = formatDate(date)
     return (
       <View style={[appStyles.container, style.listContainer]}>
         <View style={style.listHeader}>
@@ -75,8 +72,8 @@ export default class List extends React.Component {
               <Image source={etherIcon} style={style.listImg}/>
             </View>
             <View style={style.listColumn}>
-              <Text style={style.listAddress}>
-                {getShortAddress(item.key, 14)}
+              <Text style={style.listName}>
+                {cropString(item.name, 14)}
               </Text>
               <View style={[style.listItemInfo, style.center]}>
                 <View>
@@ -137,9 +134,9 @@ const style = StyleSheet.create({
     width: 60,
     height: 60
   },
-  listAddress: {
+  listName: {
     fontSize: 16,
-    color: '#1B5E20' // material green 900
+    color: appStyles.color.secundary[900]
   },
   listItemInfo: {
     paddingLeft: 5,

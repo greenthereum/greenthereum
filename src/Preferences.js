@@ -56,7 +56,7 @@ export default class Preferences extends React.Component {
   }
 
   updateMainStatePrefs(preferences) {
-    const accounts = this.mainComponent.state.accounts
+    const wallets = this.mainComponent.state.wallets
     this.mainComponent.setState(
       (prevState) => ({
         loading: true,
@@ -65,14 +65,14 @@ export default class Preferences extends React.Component {
         // wait for the main State is updated then:
         this.mainComponent.loadConversionRates()
           .then(() => {
-            if (accounts.length) {
+            if (wallets.length) {
               return this.mainComponent.refresh()
             }
           })
           .then(() => {
             this.mainComponent.setState({ loading: false })
           })
-        this.mainComponent.updateBackupState('update backup preferences')
+        this.mainComponent.updateBackupState('preferences')
       }
     )
   }
