@@ -76,12 +76,12 @@ export default class Main extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ loading: true })
     this.loadApp()
   }
 
   async loadApp() {
     console.log('loading App...')
+    this.setState({ loading: true })
     try {
       await this.loadBackupState()
       if (this.state.wallets.length) {
