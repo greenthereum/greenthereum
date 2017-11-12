@@ -18,7 +18,7 @@ import {
   formatCurrency,
   formatDate,
   formatNumber,
-  getShortAddress,
+  cropString,
   processCurrency
 } from './lib/utils'
 import API from './lib/api'
@@ -170,10 +170,10 @@ export default class Details extends React.Component {
           <Text style={style.small}>{formatDate(tx.date)}</Text>
         </View>
         <View style={style.column}>
-          <Text style={style.colAddress}>{getShortAddress(tx.from, 2, 2)}</Text>
+          <Text style={style.colAddress}>{cropString(tx.from, 2, 2)}</Text>
         </View>
         <View style={style.column}>
-          <Text style={style.colAddress}>{getShortAddress(tx.to, 2, 2)}</Text>
+          <Text style={style.colAddress}>{cropString(tx.to, 2, 2)}</Text>
         </View>
         <View style={style.column}>
           <Text>{formatNumber(tx.value, 5)}</Text>
@@ -293,7 +293,7 @@ const style = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 10,
     fontSize: 12,
-    color: appStyles.color.primary[900]
+    color: appStyles.color.secundary[900]
   },
   balanceRow: {
     flexDirection: 'row',
