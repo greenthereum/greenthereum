@@ -5,8 +5,11 @@ function isEthereumAddress(text) {
   return Boolean(text.length >= 40 && /^(0x){0,1}([0-9a-fA-F]{40}$)/.test(text))
 }
 
-function getShortAddress(address, first = 10, last = 5) { // length >= 40
-  return `${address.substr(0, first)}...${address.substr(-1 * last)}`
+function cropString(address, first = 10, last = 5) { // length >= 40
+  const half = address.substr(0, first)
+  return address.length > first ?
+    `${half}...${address.substr(-1 * last)}` :
+    half
 }
 
 function formatDate(date) {
@@ -66,7 +69,7 @@ export {
   formatDate,
   formatNumber,
   getCurrencySymbol,
-  getShortAddress,
+  cropString,
   isEthereumAddress,
   processCurrency
 }

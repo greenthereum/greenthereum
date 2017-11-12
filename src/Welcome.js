@@ -36,7 +36,7 @@ export default class Welcome extends React.Component {
     return (
       <ScrollView>
         <View style={[appStyles.container, styles.flex]}>
-          <Warning customStyles={styles.warning} msg='No accounts found'></Warning>
+          <Warning customStyles={styles.warning} msg='No wallets found'></Warning>
           <Warning customStyles={styles.warning} msg='Please import an Ethereum Address to track.'></Warning>
           <View style={styles.picContainer}>
             <Image source={etherIcon} style={styles.img}/>
