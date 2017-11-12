@@ -17,16 +17,19 @@
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
-    "test": "node node_modules/jest/bin/jest.js"
+    "test": "node node_modules/jest/bin/jest.js",
+    "test-coverage": "node node_modules/jest/bin/jest.js --coverage"
   },
   "pre-commit": [
-    "test"
+    "test-coverage"
   ],
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "coverageDirectory": "./test/coverage"
   },
   "dependencies": {
     "currency-formatter": "^1.3.0",
+    "empty-value": "^1.0.1",
     "ethereum-blockies": "^0.1.1",
     "ethereum-units": "0.0.1-b",
     "expo": "^21.0.0",
