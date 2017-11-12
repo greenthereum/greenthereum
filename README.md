@@ -7,8 +7,8 @@ Free and **Open Source** [Ethereum](https://ethereum.org/) tracker and account e
 In a nutshell this app will give you access to follow and track your ethereums accounts activities and info in different currencies.  
 **Important**: We will **never** ask for your **private** key, we don't need it, we only access the open information in the blockchain with your **public address**.
 
-![](assets/pictures/list-2.png)
-![](assets/pictures/rsz_overview.png)   
+![](assets/pictures/wallets-for-readme.png)
+![](assets/pictures/wallet-overview-for-readme.png)   
 
 ### Features
 - See any ethereum account **balance**
@@ -19,7 +19,6 @@ In a nutshell this app will give you access to follow and track your ethereums a
 - Work **offline** with the last data available
 - Support for 32 currencies
 - Free and **Open Source**, help us improve it
-
 
 
 ### Getting Started
