@@ -104,8 +104,6 @@ export default class Main extends React.Component {
     console.log('loadConversionRates')
     if (this.state.conversionRates && this.state.conversionRates.date) {
       console.log('Backed conversionRates found', JSON.stringify(this.state.conversionRates))
-      // load from Backup
-      this.setState((prevState) => ({ conversionRates: this.state.conversionRates }))
       const now = new Date()
       const conversionsBackupDate = new Date(Date.parse(this.state.conversionRates.date))
       // (Wait 2 days before update conversionRates)
