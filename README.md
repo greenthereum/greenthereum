@@ -1,8 +1,10 @@
 # Greenthereum (WIP)
+[![](https://circleci.com/gh/greenthereum/greenthereum.png?style=shield&circle-token=322df9b993df441bf6c2cfe94b9d7101632bfe2e)](https://circleci.com/gh/greenthereum/greenthereum)  
 
 Free and **Open Source** [Ethereum](https://ethereum.org/) tracker and account explorer app, built with [React Native](https://facebook.github.io/react-native/) for **Android - iOS**.     
 
-[![](https://circleci.com/gh/greenthereum/greenthereum.png?style=shield&circle-token=322df9b993df441bf6c2cfe94b9d7101632bfe2e)](https://circleci.com/gh/greenthereum/greenthereum)   
+<a href='https://play.google.com/store/apps/details?id=com.greenthereum&utm_source=github&utm_campaign=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style='width: 256px;' alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+
 
 In a nutshell this app will give you access to follow and track your ethereums accounts activities and info in different currencies.  
 **Important**: We will **never** ask for your **private** key, we don't need it, we only access the open information in the blockchain with your **public address**.
