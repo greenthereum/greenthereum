@@ -3,7 +3,7 @@
 
 Free and **Open Source** [Ethereum](https://ethereum.org/) tracker and account explorer app, built with [React Native](https://facebook.github.io/react-native/) for **Android - iOS**.     
 
-<a href='https://play.google.com/store/apps/details?id=com.greenthereum&utm_source=github&utm_campaign=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style='width: 256px;' alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=com.greenthereum&utm_source=github&utm_campaign=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="256" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 
 In a nutshell this app will give you access to follow and track your ethereums accounts activities and info in different currencies.  
