@@ -1,4 +1,4 @@
-# Greenthereum (WIP)
+# Greenthereum (working PoC)
 [![](https://circleci.com/gh/greenthereum/greenthereum.png?style=shield&circle-token=322df9b993df441bf6c2cfe94b9d7101632bfe2e)](https://circleci.com/gh/greenthereum/greenthereum)  
 
 Free and **Open Source** [Ethereum](https://ethereum.org/) tracker and account explorer app, built with [React Native](https://facebook.github.io/react-native/) for **Android - iOS**.     
