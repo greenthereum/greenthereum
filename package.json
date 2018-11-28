@@ -38,6 +38,7 @@
     "react": "16.0.0",
     "react-native": "0.49.0",
     "react-native-qrcode": "0.2.6",
-    "react-navigation": "1.0.0-beta.15"
+    "react-navigation": "1.0.0-beta.15",
+    "whatwg-fetch": "^2.0.4"
   }
 }
